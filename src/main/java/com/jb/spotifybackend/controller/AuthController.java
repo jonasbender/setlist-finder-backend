@@ -7,7 +7,6 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -19,9 +18,8 @@ import java.net.URI;
 public class AuthController {
 
     private static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8080/api/get-user-code/");
-    private String code = "";
-    private static String CLIENT_ID = "013cc9a435c7467492532478e1144d3c";
-    private static String CLIENT_SECRET = "746bc9dc80924d48804b351fcba66356";
+    private static final String CLIENT_ID = "013cc9a435c7467492532478e1144d3c";
+    private static final String CLIENT_SECRET = "746bc9dc80924d48804b351fcba66356";
 
     public static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
             .setClientId(CLIENT_ID)
@@ -43,8 +41,7 @@ public class AuthController {
 
     @GetMapping(value = "get-user-code")
     public String getSpotifyUserCode(@RequestParam("code") String userCode, HttpServletResponse response) throws IOException {
-        code = userCode;
-        AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code)
+        AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(userCode)
                 .build();
 
         try {
