@@ -1,11 +1,17 @@
 package com.jb.spotifybackend.controller;
 
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.Artist;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.requests.data.personalization.simplified.GetUsersTopArtistsRequest;
+import com.wrapper.spotify.requests.data.search.simplified.SearchArtistsRequest;
+import org.apache.hc.core5.http.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 import static com.jb.spotifybackend.controller.AuthController.spotifyApi;
 
@@ -30,6 +36,25 @@ public class SpotifyApiController {
         } catch (Exception e) {
             System.out.println("Something went wrong!\n" + e.getMessage());
         }
+        return new Artist[0];
+    }
+
+    @GetMapping(value = "search/{q}")
+    public Artist[] getSearchResults(@PathVariable("q") String q) {
+        final SearchArtistsRequest searchArtistsRequest = spotifyApi.searchArtists(q)
+                .limit(10)
+                .build();
+
+            try {
+                final Paging<Artist> artistPaging = searchArtistsRequest.execute();
+
+                System.out.println("Total: " + artistPaging.getTotal());
+                System.out.println(q);
+                return artistPaging.getItems();
+
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                System.out.println("Error: " + e.getMessage());
+            }
         return new Artist[0];
     }
 }

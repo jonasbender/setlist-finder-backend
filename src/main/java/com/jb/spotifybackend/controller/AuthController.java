@@ -5,8 +5,11 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
+import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
+import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import org.apache.hc.core5.http.ParseException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -21,15 +24,18 @@ public class AuthController {
     private static final String CLIENT_ID = "013cc9a435c7467492532478e1144d3c";
     private static final String CLIENT_SECRET = "746bc9dc80924d48804b351fcba66356";
 
+    private static final String accessToken = "BQDv0iBe4eRq_GNUvXa1eucDWp-4EaryFxsK7chFK4xoC-yxFpWqAD4YZblowECNPnEVR3Vw_tgqXkQ3ZLDjntb9-W-BDji2Yp_1sIKDriSME3gmJM8AWm4d0tiHHwx4SgMuaieEduTVupxaQCoUqMxx8gwACuE83bSb9dKdlLdBvOXWR7fb6Q";
+
     public static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
             .setClientId(CLIENT_ID)
             .setClientSecret(CLIENT_SECRET)
             .setRedirectUri(redirectUri)
             .build();
 
+
+
     @GetMapping("login")
     @ResponseBody
-
     public String spotifyLogin() {
         AuthorizationCodeUriRequest authorizationCodeUriRequest = spotifyApi.authorizationCodeUri()
                 .scope("user-read-private, user-read-email, user-top-read")
