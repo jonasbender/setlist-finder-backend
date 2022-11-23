@@ -24,7 +24,7 @@ public class AuthController {
     private static final String CLIENT_ID = "013cc9a435c7467492532478e1144d3c";
     private static final String CLIENT_SECRET = "746bc9dc80924d48804b351fcba66356";
 
-    private static final String accessToken = "BQDv0iBe4eRq_GNUvXa1eucDWp-4EaryFxsK7chFK4xoC-yxFpWqAD4YZblowECNPnEVR3Vw_tgqXkQ3ZLDjntb9-W-BDji2Yp_1sIKDriSME3gmJM8AWm4d0tiHHwx4SgMuaieEduTVupxaQCoUqMxx8gwACuE83bSb9dKdlLdBvOXWR7fb6Q";
+
 
     public static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
             .setClientId(CLIENT_ID)
