@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
-import static com.jb.spotifybackend.controller.AuthController.spotifyApi;
+import static com.jb.spotifybackend.controller.UserAuthController.spotifyApi;
+import static com.jb.spotifybackend.controller.ServerAuthController.clientCredentials_Sync;
+import static com.jb.spotifybackend.controller.ServerAuthController.spotifyApiLight;
 
 @RestController
 @RequestMapping("/api")
@@ -41,11 +43,13 @@ public class SpotifyApiController {
 
     @GetMapping(value = "search/{q}")
     public Artist[] getSearchResults(@PathVariable("q") String q) {
-        final SearchArtistsRequest searchArtistsRequest = spotifyApi.searchArtists(q)
-                .limit(10)
+        clientCredentials_Sync();
+        final SearchArtistsRequest searchArtistsRequest = spotifyApiLight.searchArtists(q)
+                .limit(6)
                 .build();
 
             try {
+
                 final Paging<Artist> artistPaging = searchArtistsRequest.execute();
 
                 System.out.println("Total: " + artistPaging.getTotal());
