@@ -1,4 +1,4 @@
-package com.jb.spotifybackend.controller;
+package com.jb.spotifybackend.spotifycontroller;
 
 
 import com.wrapper.spotify.SpotifyApi;
@@ -9,15 +9,15 @@ import org.apache.hc.core5.http.ParseException;
 
 import java.io.IOException;
 
+import com.jb.spotifybackend.utils.KeyStore;
+
 
 public class ServerAuthController {
 
-    private static final String CLIENT_ID = "013cc9a435c7467492532478e1144d3c";
-    private static final String CLIENT_SECRET = "746bc9dc80924d48804b351fcba66356";
 
     static final SpotifyApi spotifyApiLight = new SpotifyApi.Builder()
-            .setClientId(CLIENT_ID)
-            .setClientSecret(CLIENT_SECRET)
+            .setClientId(KeyStore.CLIENT_ID)
+            .setClientSecret(KeyStore.CLIENT_SECRET)
             .build();
 
     private static final ClientCredentialsRequest clientCredentialsRequest = spotifyApiLight.clientCredentials()

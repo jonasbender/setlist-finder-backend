@@ -1,8 +1,7 @@
-package com.jb.spotifybackend.controller;
+package com.jb.spotifybackend.spotifycontroller;
 
 
 import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.SpotifyHttpManager;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
@@ -13,20 +12,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 
+import com.jb.spotifybackend.utils.KeyStore;
+
 @RestController
 @RequestMapping("/api")
 public class UserAuthController {
 
-    private static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8080/api/get-user-code/");
-    private static final String CLIENT_ID = "013cc9a435c7467492532478e1144d3c";
-    private static final String CLIENT_SECRET = "746bc9dc80924d48804b351fcba66356";
-
 
 
     public static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
-            .setClientId(CLIENT_ID)
-            .setClientSecret(CLIENT_SECRET)
-            .setRedirectUri(redirectUri)
+            .setClientId(KeyStore.CLIENT_ID)
+            .setClientSecret(KeyStore.CLIENT_SECRET)
+            .setRedirectUri(KeyStore.redirectUri)
             .build();
 
 

@@ -1,4 +1,4 @@
-package com.jb.spotifybackend.controller;
+package com.jb.spotifybackend.spotifycontroller;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.Artist;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
-import static com.jb.spotifybackend.controller.UserAuthController.spotifyApi;
-import static com.jb.spotifybackend.controller.ServerAuthController.clientCredentials_Sync;
-import static com.jb.spotifybackend.controller.ServerAuthController.spotifyApiLight;
+import static com.jb.spotifybackend.spotifycontroller.UserAuthController.spotifyApi;
+import static com.jb.spotifybackend.spotifycontroller.ServerAuthController.clientCredentials_Sync;
+import static com.jb.spotifybackend.spotifycontroller.ServerAuthController.spotifyApiLight;
 
 @RestController
 @RequestMapping("/api")
