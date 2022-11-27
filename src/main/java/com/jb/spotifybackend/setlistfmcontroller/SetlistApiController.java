@@ -1,21 +1,54 @@
 package com.jb.spotifybackend.setlistfmcontroller;
 
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.jb.spotifybackend.utils.KeyStore;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 
 @RestController
 @RequestMapping("/api")
 public class SetlistApiController {
 
+    private final HttpClient httpClient = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_2)
+            .build();
 
-    @GetMapping(value = "search/{q}")
-    public String getSetlists(@PathVariable("q") String q) {
 
-    return "test";
-    }
+    @RequestMapping(value = "setlists/{artist}", method = RequestMethod.GET)
+    public String getSetlists(@PathVariable("artist") String artist) throws Exception {
+
+        return "test";
+
+    };
+
+    public String getMBID(String artist) throws Exception {
+        String url = "https://api.setlist.fm/rest/1.0/search/artists?artistName=" + artist + "&p=1&sort=relevance";
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .setHeader("Accept", "application/json")
+                .setHeader("x-api-key", KeyStore.API_KEY)
+                .build();
+
+        System.out.println(request);
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println(response.statusCode());
+
+        System.out.println(response.body());
+
+        //Object responseBody = JsonValue.parse(response.body());
+        //result = responseBody.getString("mbid");
+
+        return "test";
+    };
 
 }
