@@ -3,6 +3,7 @@ package com.jb.spotifybackend.setlistfmcontroller;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.jb.spotifybackend.utils.KeyStore;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -23,6 +24,7 @@ public class SetlistApiController {
     @RequestMapping(value = "setlists/{artist}", method = RequestMethod.GET)
     public String getSetlists(@PathVariable("artist") String artist) throws Exception {
 
+        getMBID(artist);
         return "test";
 
     };
@@ -45,8 +47,9 @@ public class SetlistApiController {
 
         System.out.println(response.body());
 
-        //Object responseBody = JsonValue.parse(response.body());
-        //result = responseBody.getString("mbid");
+        JSONObject jsonObject = new JSONObject(response.body());
+        String result = jsonObject.getString("mbid");
+        System.out.println(result);
 
         return "test";
     };
