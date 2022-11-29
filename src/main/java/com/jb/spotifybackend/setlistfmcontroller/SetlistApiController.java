@@ -1,8 +1,8 @@
 package com.jb.spotifybackend.setlistfmcontroller;
 
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.jb.spotifybackend.utils.KeyStore;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +25,10 @@ public class SetlistApiController {
     public String getSetlists(@PathVariable("artist") String artist) throws Exception {
 
         getMBID(artist);
+
+
+
+
         return "test";
 
     };
@@ -43,15 +47,15 @@ public class SetlistApiController {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println(response.statusCode());
-
-        System.out.println(response.body());
+        // System.out.println(response.statusCode());
+        // System.out.println(response.body());
 
         JSONObject jsonObject = new JSONObject(response.body());
-        String result = jsonObject.getString("mbid");
-        System.out.println(result);
+        JSONArray result = jsonObject.getJSONArray("artist");
+        String mbid = result.getJSONObject(0).getString("mbid");
+        System.out.println(mbid);
 
-        return "test";
+        return "mbid";
     };
 
 }
