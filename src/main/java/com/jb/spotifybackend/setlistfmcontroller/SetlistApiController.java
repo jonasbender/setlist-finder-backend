@@ -24,13 +24,36 @@ public class SetlistApiController {
     @RequestMapping(value = "setlists/{artist}", method = RequestMethod.GET)
     public String getSetlists(@PathVariable("artist") String artist) throws Exception {
 
-        getMBID(artist);
+        String mbid = getMBID(artist);
+        System.out.println(mbid);
+        String jsonSetlists = getArtistSetlists(mbid);
 
 
+        return jsonSetlists;
 
+    };
 
-        return "test";
+    public String getArtistSetlists(String mbid) throws Exception {
+        System.out.println(mbid);
+        String url = "https://api.setlist.fm/rest/1.0/artist/" + mbid + "/setlists?p=1";
 
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .setHeader("Accept", "application/json")
+                .setHeader("x-api-key", KeyStore.API_KEY)
+                .build();
+
+        System.out.println(request);
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // System.out.println(response.body());
+
+        System.out.println(response);
+        String jsonObject = response.body();
+
+        return jsonObject;
     };
 
     public String getMBID(String artist) throws Exception {
@@ -55,7 +78,7 @@ public class SetlistApiController {
         String mbid = result.getJSONObject(0).getString("mbid");
         System.out.println(mbid);
 
-        return "mbid";
+        return mbid;
     };
 
 }
