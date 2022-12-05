@@ -57,6 +57,8 @@ public class SetlistApiController {
     };
 
     public String getMBID(String artist) throws Exception {
+        System.out.println(artist);
+        artist = artist.replace(" ", "%20");
         String url = "https://api.setlist.fm/rest/1.0/search/artists?artistName=" + artist + "&p=1&sort=relevance";
 
         HttpRequest request = HttpRequest.newBuilder()

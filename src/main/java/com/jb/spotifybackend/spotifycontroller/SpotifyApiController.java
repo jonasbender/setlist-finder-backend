@@ -45,7 +45,7 @@ public class SpotifyApiController {
     public Artist[] getSearchResults(@PathVariable("q") String q) {
         clientCredentials_Sync();
         final SearchArtistsRequest searchArtistsRequest = spotifyApiLight.searchArtists(q)
-                .limit(6)
+                .limit(4)
                 .build();
 
             try {
