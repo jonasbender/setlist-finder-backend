@@ -88,4 +88,31 @@ public class SetlistApiController {
     };
 
 
+    public String getSetlistById(String setlistId) throws Exception {
+        String url = "https://api.setlist.fm/rest/1.0/setlist/" + setlistId;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .setHeader("Accept", "application/json")
+                .setHeader("x-api-key", KeyStore.API_KEY)
+                .build();
+
+        System.out.println(request);
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // System.out.println(response.body());
+
+        System.out.println(response);
+
+        if (response.statusCode() == 429) {
+            System.out.println(response.headers());
+        }
+        String jsonObject = response.body();
+
+        return jsonObject;
+    };
+
+
 }
