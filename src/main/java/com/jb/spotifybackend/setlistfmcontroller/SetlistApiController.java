@@ -51,6 +51,10 @@ public class SetlistApiController {
         // System.out.println(response.body());
 
         System.out.println(response);
+
+        if (response.statusCode() == 429) {
+            System.out.println(response.headers());
+        }
         String jsonObject = response.body();
 
         return jsonObject;
@@ -82,5 +86,6 @@ public class SetlistApiController {
 
         return mbid;
     };
+
 
 }
