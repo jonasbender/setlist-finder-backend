@@ -16,7 +16,7 @@ import java.net.http.HttpResponse;
 @RequestMapping("/api")
 public class SetlistApiController {
 
-    private final HttpClient httpClient = HttpClient.newBuilder()
+    private static final HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_2)
             .build();
 
@@ -88,7 +88,7 @@ public class SetlistApiController {
     };
 
 
-    public String getSetlistById(String setlistId) throws Exception {
+    public static String getSetlistById(String setlistId) throws Exception {
         String url = "https://api.setlist.fm/rest/1.0/setlist/" + setlistId;
 
         HttpRequest request = HttpRequest.newBuilder()
