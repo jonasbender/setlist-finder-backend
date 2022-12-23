@@ -2,28 +2,34 @@ package com.jb.spotifybackend.model;
 
 public class Song {
 
-    private String songTitle;
+    private String trackName;
     private String trackId;
     private String trackImageURL;
     private String artist;
     private String album;
-    private String coverArtist;
+    private Boolean isCover;
 
-    public Song(String songTitle, String trackId, String trackImageURL, String artist, String album, String coverArtist) {
-        this.songTitle = songTitle;
+    public Song(String trackName, String artist, Boolean isCover) {
+        this.trackName = trackName;
+        this.artist = artist;
+        this.isCover = isCover;
+    }
+
+    public Song(String trackName, String trackId, String trackImageURL, String artist, String album, Boolean isCover) {
+        this.trackName = trackName;
         this.trackId = trackId;
         this.trackImageURL = trackImageURL;
         this.artist = artist;
         this.album = album;
-        this.coverArtist = coverArtist;
+        this.isCover = isCover;
     }
 
-    public String getSongTitle() {
-        return songTitle;
+    public String getTrackName() {
+        return trackName;
     }
 
-    public void setSongTitle(String songTitle) {
-        this.songTitle = songTitle;
+    public void setTrackName(String trackName) {
+        this.trackName = trackName;
     }
 
     public String getTrackId() {
@@ -58,11 +64,11 @@ public class Song {
         this.album = album;
     }
 
-    public String getCoverArtist() {
-        return coverArtist;
+    public Boolean getCover() {
+        return isCover;
     }
 
-    public void setCoverArtist(String coverArtist) {
-        this.coverArtist = coverArtist;
+    public void setCover(Boolean cover) {
+        isCover = cover;
     }
 }
