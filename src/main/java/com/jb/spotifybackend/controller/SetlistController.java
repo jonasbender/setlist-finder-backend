@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jb.spotifybackend.model.Song;
 import com.jb.spotifybackend.setlistfmcontroller.SetlistApiController;
+import com.jb.spotifybackend.spotifycontroller.SpotifyApiController;
+import com.wrapper.spotify.model_objects.specification.Track;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,43 +27,67 @@ public class SetlistController {
     @RequestMapping(value = "tracks/{setlistId}", method = RequestMethod.GET)
     public String getSetlistTracks(@PathVariable("setlistId") String setlistId) throws Exception {
 
-        List<Song> songs = new ArrayList<>();
-
         String jsonSetlist = SetlistApiController.getSetlistById(setlistId);
 
-        System.out.println(jsonSetlist);
-
         JSONObject jsonObject = new JSONObject(jsonSetlist);
-        System.out.println(jsonSetlist);
 
         String artistName = jsonObject.getJSONObject("artist").getString("name");
-        System.out.println("Artist Name: " + artistName);
 
-        JSONArray songArray = jsonObject.getJSONObject("sets").getJSONObject("set").getJSONArray("song");
+        List<Song> songs = parseSetlist(jsonSetlist, artistName);
 
+        for (Song song : songs) {
+            System.out.println("test");
+            System.out.println(song);
+            System.out.println(song.getTrackName());
+
+
+        }
+
+        //String q = "track%3A" + trackName + "%20artist%3A" + artist;
+        //Track[] spotifyResponse = SpotifyApiController.getSongSearch(q);
+        //System.out.println(spotifyResponse);
 
         return jsonSetlist;
 
     };
 
-    public class SetlistParser {
-        public List<Song> parseSetlist(String setlistJson) throws IOException {
-            List<Song> songs = new ArrayList<>();
+    public List<Song> parseSetlist(String setlistJson, String artistName) throws IOException {
+        List<Song> songs = new ArrayList<>();
+        Boolean isCover = Boolean.FALSE;
+        String rootArtist = artistName;
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(setlistJson);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(setlistJson);
+        System.out.println("pointer");
+        String fieldValue = root.path("id").asText();
+        System.out.println(fieldValue);
+        JsonNode setsNode = root.path("sets").path("set");
 
-            JsonNode setlistNode = root.path("setlist");
-            for (JsonNode songNode : setlistNode.path("sets").path("set").path("song")) {
+        for (JsonNode setNode : setsNode) {
+            JsonNode songsNode = setNode.path("song");
+            for (JsonNode songNode : songsNode) {
+
+
+                System.out.println("pointer");
                 String songName = songNode.path("name").asText();
-                String artistName = songNode.path("artist").path("name").asText();
-                Song song = new Song(songName, artistName);
+                System.out.println(songName);
+
+                if (songNode.has("cover")) {
+                    artistName = songNode.path("cover").path("name").asText();
+                    isCover = Boolean.TRUE;
+                } else {
+                    artistName = rootArtist;
+                    isCover = Boolean.FALSE;
+                }
+                Song song = new Song(songName, artistName, isCover);
+                System.out.println(song);
                 songs.add(song);
             }
-
-            return songs;
         }
+
+        return songs;
     }
+
 
 
 }

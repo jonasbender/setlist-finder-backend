@@ -71,4 +71,13 @@ public class Song {
     public void setCover(Boolean cover) {
         isCover = cover;
     }
+
+    @Override
+    public String toString() {
+        return "Song{" +
+                "trackName='" + trackName + '\'' +
+                ", artist='" + artist + '\'' +
+                ", isCover=" + isCover +
+                '}';
+    }
 }
