@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -36,16 +37,25 @@ public class SetlistController {
         List<Song> songs = parseSetlist(jsonSetlist, artistName);
 
         for (Song song : songs) {
-            System.out.println("test");
-            System.out.println(song);
-            System.out.println(song.getTrackName());
+            //System.out.println("test");
+            //System.out.println(song);
+            //System.out.println(song.getTrackName());
+            String trackName = song.getTrackName();
+            String artist = song.getArtist();
 
-
+            String q = "track: " + trackName + " artist: " + artist;
+            Track[] spotifyResponse = SpotifyApiController.getSongSearch(q);
+            String trackId = spotifyResponse[0].getId();
+            System.out.println("TrackDuration: " + spotifyResponse[0].getDurationMs());
+            System.out.println("TrackImage: " + spotifyResponse[0].getAlbum().getImages()[0].getUrl());
         }
 
-        //String q = "track%3A" + trackName + "%20artist%3A" + artist;
-        //Track[] spotifyResponse = SpotifyApiController.getSongSearch(q);
-        //System.out.println(spotifyResponse);
+
+
+
+
+
+
 
         return jsonSetlist;
 

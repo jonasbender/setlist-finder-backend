@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static com.jb.spotifybackend.spotifycontroller.UserAuthController.spotifyApi;
 import static com.jb.spotifybackend.spotifycontroller.ServerAuthController.clientCredentials_Sync;
@@ -74,9 +75,10 @@ public class SpotifyApiController {
                 .build();
 
         try {
+            System.out.println("searchTracksRequest: " + searchTracksRequest);
             final Paging<Track> trackPaging = searchTracksRequest.execute();
 
-            System.out.println("TrackId: " + trackPaging.getItems());
+            System.out.println("TrackId: " + Arrays.toString(trackPaging.getItems()));
             System.out.println("Total: " + trackPaging.getTotal());
             return trackPaging.getItems();
         } catch (IOException | SpotifyWebApiException | ParseException e) {
