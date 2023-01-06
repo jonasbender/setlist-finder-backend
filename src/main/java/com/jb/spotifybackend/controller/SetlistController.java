@@ -4,6 +4,7 @@ package com.jb.spotifybackend.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jb.spotifybackend.model.Song;
+import com.jb.spotifybackend.model.SpotifySong;
 import com.jb.spotifybackend.setlistfmcontroller.SetlistApiController;
 import com.jb.spotifybackend.spotifycontroller.SpotifyApiController;
 import com.wrapper.spotify.model_objects.specification.Track;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -28,13 +28,20 @@ public class SetlistController {
     @RequestMapping(value = "tracks/{setlistId}", method = RequestMethod.GET)
     public String getSetlistTracks(@PathVariable("setlistId") String setlistId) throws Exception {
 
+        List<SpotifySong> spotifySongs = new ArrayList<>();
+
         String jsonSetlist = SetlistApiController.getSetlistById(setlistId);
 
         JSONObject jsonObject = new JSONObject(jsonSetlist);
 
         String artistName = jsonObject.getJSONObject("artist").getString("name");
+        String venue = jsonObject.getJSONObject("venue").getString("name");
+        String eventDate = jsonObject.getString("eventDate");
 
         List<Song> songs = parseSetlist(jsonSetlist, artistName);
+
+        Integer totalDurationMs = 0;
+
 
         for (Song song : songs) {
             //System.out.println("test");
@@ -46,18 +53,58 @@ public class SetlistController {
             String q = "track: " + trackName + " artist: " + artist;
             Track[] spotifyResponse = SpotifyApiController.getSongSearch(q);
             String trackId = spotifyResponse[0].getId();
-            System.out.println("TrackDuration: " + spotifyResponse[0].getDurationMs());
-            System.out.println("TrackImage: " + spotifyResponse[0].getAlbum().getImages()[0].getUrl());
+            String trackImageURL = spotifyResponse[0].getAlbum().getImages()[0].getUrl();
+            String album = spotifyResponse[0].getAlbum().getName();
+            Boolean isCover = song.getCover();
+
+            totalDurationMs += spotifyResponse[0].getDurationMs();
+
+            System.out.println(trackId);
+            System.out.println(trackImageURL);
+            System.out.println(album);
+            System.out.println(isCover);
+
+            SpotifySong spotifySong = new SpotifySong(trackName, trackId, trackImageURL, artist, album, isCover);
+            System.out.println(spotifySong);
+            spotifySongs.add(spotifySong);
+        }
+
+        System.out.println("Total Duration: " + totalDurationMs);
+        Integer totalDuration = totalDurationMs / 60000;
+        System.out.println("Total Duration: " + totalDuration);
+
+        System.out.println(spotifySongs);
+
+        JSONArray jsonSongArray = new JSONArray();
+
+
+        for (SpotifySong song : spotifySongs) {
+            System.out.println(song.getTrackImageURL());
+            JSONObject jsonSong = new JSONObject();
+            jsonSong.put("trackName", song.getTrackName());
+            jsonSong.put("trackId", song.getTrackId());
+            jsonSong.put("trackImageURL", song.getTrackImageURL());
+            jsonSong.put("artist", song.getArtist());
+            jsonSong.put("album", song.getAlbum());
+            jsonSong.put("isCover", song.getCover());
+            jsonSongArray.put(jsonSong);
         }
 
 
 
+        JSONObject jsonSongObject = new JSONObject();
+        jsonSongObject.put("totalDuration", totalDuration);
+        jsonSongObject.put("eventDate", eventDate);
+        jsonSongObject.put("eventVenue", venue);
+        jsonSongObject.put("artistName", artistName);
+        jsonSongObject.put("tracks", jsonSongArray);
+
+        String jsonSetlistString = jsonSongObject.toString(4);
 
 
-
-
-
-        return jsonSetlist;
+        System.out.println(jsonSetlistString);
+        System.out.println(jsonSetlist);
+        return jsonSetlistString;
 
     };
 
