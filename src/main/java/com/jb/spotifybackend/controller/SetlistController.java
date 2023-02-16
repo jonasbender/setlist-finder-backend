@@ -38,6 +38,10 @@ public class SetlistController {
         String venue = jsonObject.getJSONObject("venue").getString("name");
         String eventDate = jsonObject.getString("eventDate");
 
+        // String jsonTestString = PlaylistImageController.getPlaylistImage();
+        //System.out.println(jsonTestString);
+        System.out.println("Test");
+
         List<Song> songs = parseSetlist(jsonSetlist, artistName);
 
         Integer totalDurationMs = 0;

@@ -2,9 +2,10 @@ package com.jb.spotifybackend.spotifycontroller;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.Artist;
+import com.wrapper.spotify.model_objects.specification.Image;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Track;
-import com.wrapper.spotify.requests.data.personalization.simplified.GetUsersTopArtistsRequest;
+import com.wrapper.spotify.requests.data.artists.GetArtistRequest;
 import com.wrapper.spotify.requests.data.search.simplified.SearchArtistsRequest;
 import com.wrapper.spotify.requests.data.search.simplified.SearchTracksRequest;
 import org.apache.hc.core5.http.ParseException;
@@ -24,24 +25,20 @@ import static com.jb.spotifybackend.spotifycontroller.ServerAuthController.spoti
 @RequestMapping("/api")
 public class SpotifyApiController {
 
-    @GetMapping(value = "user-top-artists")
-    public Artist[] getUserTopArtists() {
-
-        final GetUsersTopArtistsRequest getUsersTopArtistsRequest = spotifyApi.getUsersTopArtists()
-                .time_range("medium_term")
-                .limit(10)
-                .offset(5)
+    @GetMapping(value = "artist/{id}")
+    public Image[] getArtist(@PathVariable("id") String id) {
+        clientCredentials_Sync();
+        final GetArtistRequest getArtistRequest = spotifyApiLight.getArtist(id)
                 .build();
 
         try {
-            final Paging<Artist> artistPaging = getUsersTopArtistsRequest.execute();
-
-            // return users top artists as JSON
-            return artistPaging.getItems();
+            final Artist artist = getArtistRequest.execute();
+            System.out.println(artist.getImages());
+            return artist.getImages();
         } catch (Exception e) {
             System.out.println("Something went wrong!\n" + e.getMessage());
         }
-        return new Artist[0];
+        return new Image[0];
     }
 
     @GetMapping(value = "search/{q}")
