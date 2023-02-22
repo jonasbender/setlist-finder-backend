@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jb.spotifybackend.controller.PlaylistImageController.getPlaylistImage;
+
 
 @RestController
 @RequestMapping("/api")
@@ -27,6 +29,8 @@ public class SetlistController {
 
     @RequestMapping(value = "tracks/{setlistId}", method = RequestMethod.GET)
     public String getSetlistTracks(@PathVariable("setlistId") String setlistId) throws Exception {
+
+        getPlaylistImage();
 
         List<SpotifySong> spotifySongs = new ArrayList<>();
 
