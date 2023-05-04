@@ -2,7 +2,7 @@ package com.jb.spotifybackend.model;
 
 import java.util.List;
 
-public class PlaylistRequestModel {
+public class PlaylistRequest {
     private List<String> songIds;
     private String playlistImageUrl;
     private String currentUrl;
