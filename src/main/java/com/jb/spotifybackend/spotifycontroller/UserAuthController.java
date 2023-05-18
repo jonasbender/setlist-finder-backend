@@ -8,11 +8,17 @@ import com.wrapper.spotify.requests.authorization.authorization_code.Authorizati
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.util.Base64;
 
 import com.jb.spotifybackend.utils.KeyStore;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequestMapping("/api")
@@ -30,19 +36,29 @@ public class UserAuthController {
 
     @GetMapping("login")
     @ResponseBody
-    public String spotifyLogin() {
+    public String spotifyLogin(@RequestParam("lastViewedUrl") String lastViewedUrl, HttpServletRequest request) throws UnsupportedEncodingException {
+
+
+        System.out.println("lastViewedUrl: " + lastViewedUrl);
+        String state = Base64.getEncoder().encodeToString(lastViewedUrl.getBytes());
+
         AuthorizationCodeUriRequest authorizationCodeUriRequest = spotifyApi.authorizationCodeUri()
                 .scope("user-read-private, user-read-email, user-top-read")
                 .show_dialog(true)
+                .state(state)
                 .build();
         final URI uri = authorizationCodeUriRequest.execute();
+        System.out.println(uri);
         return uri.toString();
     }
 
-    @GetMapping(value = "get-user-code")
-    public String getSpotifyUserCode(@RequestParam("code") String userCode, HttpServletResponse response) throws IOException {
+    @GetMapping(value = "callback")
+    public String getSpotifyUserCode(@RequestParam("code") String userCode,@RequestParam("state") String state, HttpServletResponse response, HttpServletRequest request) throws IOException {
         AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(userCode)
                 .build();
+
+        String accessToken = "";
+        String refreshToken = "";
 
         try {
             final AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
@@ -51,11 +67,32 @@ public class UserAuthController {
             spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
             System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
+            System.out.println("Access Token: " + authorizationCodeCredentials.getAccessToken());
+            System.out.println("Refresh Token: " + authorizationCodeCredentials.getRefreshToken());
+            accessToken = authorizationCodeCredentials.getAccessToken();
+            refreshToken = authorizationCodeCredentials.getRefreshToken();
+
+            Cookie accessTokenCookie = new Cookie("accessToken", authorizationCodeCredentials.getAccessToken());
+            accessTokenCookie.setHttpOnly(true);
+            accessTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
+            response.addCookie(accessTokenCookie);
+
+            Cookie refreshTokenCookie = new Cookie("refreshToken", authorizationCodeCredentials.getRefreshToken());
+            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
+            response.addCookie(refreshTokenCookie);
+
         } catch (IOException | SpotifyWebApiException | org.apache.hc.core5.http.ParseException e) {
             System.out.println("Error " + e.getMessage());
         }
 
-        response.sendRedirect("http://localhost:4200/top-artists");
+        byte[] decodedState = Base64.getDecoder().decode(state);
+        String lastViewedUrl = new String(decodedState);
+        lastViewedUrl = lastViewedUrl + "&access_token=" + accessToken + "&refresh_token=" + refreshToken;
+
+        System.out.println("Last viewed Url: " + lastViewedUrl);
+
+        response.sendRedirect(lastViewedUrl);
 
         return spotifyApi.getAccessToken();
 
