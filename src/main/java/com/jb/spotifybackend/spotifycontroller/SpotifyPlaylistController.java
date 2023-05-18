@@ -2,12 +2,14 @@ package com.jb.spotifybackend.spotifycontroller;
 
 
 import com.jb.spotifybackend.model.PlaylistRequest;
+import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.special.SnapshotResult;
 import com.wrapper.spotify.model_objects.specification.Playlist;
-import com.wrapper.spotify.model_objects.specification.PlaylistTrack;
+import com.wrapper.spotify.model_objects.specification.User;
 import com.wrapper.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
 import com.wrapper.spotify.requests.data.playlists.CreatePlaylistRequest;
+import com.wrapper.spotify.requests.data.users_profile.GetCurrentUsersProfileRequest;
 import org.apache.hc.core5.http.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import static com.jb.spotifybackend.spotifycontroller.UserAuthController.spotifyApi;
 
@@ -27,8 +28,12 @@ public class SpotifyPlaylistController {
 
    @PostMapping("/playlists")
     public ResponseEntity<?> createPlaylist(@RequestBody PlaylistRequest playlistRequest) {
+       spotifyApi.setAccessToken(playlistRequest.accessToken);
+
+       String userId = getUserProfileId();
+
         try {
-            CreatePlaylistRequest createPlaylistRequest = spotifyApi.createPlaylist(playlistRequest.getUserId(), playlistRequest.getPlaylistName())
+            CreatePlaylistRequest createPlaylistRequest = spotifyApi.createPlaylist(userId, playlistRequest.getPlaylistName())
                     .collaborative(false)
                     .public_(playlistRequest.isPrivate())
                     .description("Playlist created with Setlist Finder ")
@@ -46,6 +51,20 @@ public class SpotifyPlaylistController {
 
 
     };
+
+   public static String getUserProfileId() {
+
+       final GetCurrentUsersProfileRequest getCurrentUsersProfileRequest = spotifyApi.getCurrentUsersProfile()
+               .build();
+       String userId = null;
+       try {
+           final User user = getCurrentUsersProfileRequest.execute();
+           userId = user.getId();
+       } catch (IOException | SpotifyWebApiException | ParseException e) {
+           System.out.println("Error: " + e.getMessage());
+       }
+       return userId;
+   }
 
 
 }
