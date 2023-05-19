@@ -3,44 +3,34 @@ package com.jb.spotifybackend.model;
 import java.util.List;
 
 public class PlaylistRequest {
+
     public String accessToken;
-    private List<String> songIds;
+    private List<String> tracks;
     private String playlistImageUrl;
-    private String currentUrl;
-    private String userId;
     private String playlistName;
     private boolean isPrivate;
 
-    public List<String> getSongIds() {
-        return songIds;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setSongIds(List<String> songIds) {
-        this.songIds = songIds;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
+    public List<String> getTrackIds() {
+        return tracks;
+    }
+
+    public void setTrackIds(List<String> trackIds) {
+        this.tracks = trackIds;
+    }
     public String getPlaylistImageUrl() {
         return playlistImageUrl;
     }
 
     public void setPlaylistImageUrl(String playlistImageUrl) {
         this.playlistImageUrl = playlistImageUrl;
-    }
-
-    public String getCurrentUrl() {
-        return currentUrl;
-    }
-
-    public void setCurrentUrl(String currentUrl) {
-        this.currentUrl = currentUrl;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     public String getPlaylistName() {
