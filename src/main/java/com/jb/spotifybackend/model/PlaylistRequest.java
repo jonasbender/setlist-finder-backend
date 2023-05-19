@@ -5,7 +5,7 @@ import java.util.List;
 public class PlaylistRequest {
 
     public String accessToken;
-    private List<String> tracks;
+    private List<String> trackIds;
     private String playlistImageUrl;
     private String playlistName;
     private boolean isPrivate;
@@ -19,12 +19,13 @@ public class PlaylistRequest {
     }
 
     public List<String> getTrackIds() {
-        return tracks;
+        return trackIds;
     }
 
     public void setTrackIds(List<String> trackIds) {
-        this.tracks = trackIds;
+        this.trackIds = trackIds;
     }
+
     public String getPlaylistImageUrl() {
         return playlistImageUrl;
     }
