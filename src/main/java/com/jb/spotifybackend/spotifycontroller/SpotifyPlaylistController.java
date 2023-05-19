@@ -39,7 +39,10 @@ public class SpotifyPlaylistController {
                     .description("Playlist created with Setlist Finder ")
                     .build();
             Playlist playlist = createPlaylistRequest.execute();
-            AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi.addItemsToPlaylist(playlist.getId(), playlistRequest.getTrackIds().toArray(new String[0]))
+            System.out.println("playlistID: " + playlist.getId());
+            String[] songIds = playlistRequest.getTrackIds().toArray(new String[0]);
+            System.out.println(songIds);
+            AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi.addItemsToPlaylist(playlist.getId(), songIds)
                     .build();
             SnapshotResult snapshotResult = addItemsToPlaylistRequest.execute();
 
