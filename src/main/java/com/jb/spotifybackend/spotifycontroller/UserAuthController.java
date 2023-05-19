@@ -43,7 +43,7 @@ public class UserAuthController {
         String state = Base64.getEncoder().encodeToString(lastViewedUrl.getBytes());
 
         AuthorizationCodeUriRequest authorizationCodeUriRequest = spotifyApi.authorizationCodeUri()
-                .scope("user-read-private, user-read-email, user-top-read")
+                .scope("user-read-private, user-read-email, playlist-modify-private, playlist-modify-public")
                 .show_dialog(true)
                 .state(state)
                 .build();
