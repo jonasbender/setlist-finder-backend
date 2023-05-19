@@ -55,10 +55,12 @@ public class SpotifyPlaylistController {
 
        final GetCurrentUsersProfileRequest getCurrentUsersProfileRequest = spotifyApi.getCurrentUsersProfile()
                .build();
-       String userId = null;
+       String userId = "";
        try {
            final User user = getCurrentUsersProfileRequest.execute();
+           System.out.println(user);
            userId = user.getId();
+           System.out.println(userId);
        } catch (IOException | SpotifyWebApiException | ParseException e) {
            System.out.println("Error: " + e.getMessage());
        }
