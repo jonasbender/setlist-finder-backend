@@ -2,7 +2,6 @@ package com.jb.spotifybackend.spotifycontroller;
 
 
 import com.jb.spotifybackend.model.PlaylistRequest;
-import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.special.SnapshotResult;
 import com.wrapper.spotify.model_objects.specification.Playlist;
@@ -26,8 +25,9 @@ import static com.jb.spotifybackend.spotifycontroller.UserAuthController.spotify
 @RequestMapping("/api")
 public class SpotifyPlaylistController {
 
-   @PostMapping("/playlists")
+   @PostMapping("/createPlaylist")
     public ResponseEntity<?> createPlaylist(@RequestBody PlaylistRequest playlistRequest) {
+       System.out.println("accessToken : " + playlistRequest.getAccessToken());
        spotifyApi.setAccessToken(playlistRequest.accessToken);
 
        String userId = getUserProfileId();
@@ -39,7 +39,7 @@ public class SpotifyPlaylistController {
                     .description("Playlist created with Setlist Finder ")
                     .build();
             Playlist playlist = createPlaylistRequest.execute();
-            AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi.addItemsToPlaylist(playlist.getId(), playlistRequest.getSongIds().toArray(new String[0]))
+            AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi.addItemsToPlaylist(playlist.getId(), playlistRequest.getTrackIds().toArray(new String[0]))
                     .build();
             SnapshotResult snapshotResult = addItemsToPlaylistRequest.execute();
 
@@ -48,7 +48,6 @@ public class SpotifyPlaylistController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
 
     };
 
