@@ -16,6 +16,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Base64;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.jb.spotifybackend.utils.KeyStore;
 import org.springframework.web.servlet.view.RedirectView;
@@ -64,23 +66,13 @@ public class UserAuthController {
             final AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
 
             //set access and refresh token for further spotifyApi usage
-            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
-            spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
+
             System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
             System.out.println("Access Token: " + authorizationCodeCredentials.getAccessToken());
             System.out.println("Refresh Token: " + authorizationCodeCredentials.getRefreshToken());
             accessToken = authorizationCodeCredentials.getAccessToken();
             refreshToken = authorizationCodeCredentials.getRefreshToken();
 
-            Cookie accessTokenCookie = new Cookie("accessToken", authorizationCodeCredentials.getAccessToken());
-            accessTokenCookie.setHttpOnly(true);
-            accessTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
-            response.addCookie(accessTokenCookie);
-
-            Cookie refreshTokenCookie = new Cookie("refreshToken", authorizationCodeCredentials.getRefreshToken());
-            refreshTokenCookie.setHttpOnly(true);
-            refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
-            response.addCookie(refreshTokenCookie);
 
         } catch (IOException | SpotifyWebApiException | org.apache.hc.core5.http.ParseException e) {
             System.out.println("Error " + e.getMessage());
@@ -88,7 +80,20 @@ public class UserAuthController {
 
         byte[] decodedState = Base64.getDecoder().decode(state);
         String lastViewedUrl = new String(decodedState);
-        lastViewedUrl = lastViewedUrl + "&access_token=" + accessToken + "&refresh_token=" + refreshToken;
+
+        Pattern pattern = Pattern.compile("^(.*?)(?=&access_token=)");
+        Matcher matcher = pattern.matcher(lastViewedUrl);
+
+        if (matcher.find()) {
+            String modifiedUrl = matcher.group(1);
+            System.out.println("Modified URL: " + modifiedUrl);
+            lastViewedUrl = modifiedUrl + "&access_token=" + accessToken + "&refresh_token=" + refreshToken;
+        } else {
+            lastViewedUrl = lastViewedUrl + "&access_token=" + accessToken + "&refresh_token=" + refreshToken;
+        }
+        System.out.println("access Token: " + accessToken);
+        System.out.println("lastViewedUrl: " + lastViewedUrl);
+
 
         System.out.println("Last viewed Url: " + lastViewedUrl);
 
