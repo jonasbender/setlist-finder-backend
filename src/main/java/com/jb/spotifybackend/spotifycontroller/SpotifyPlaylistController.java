@@ -12,12 +12,15 @@ import com.wrapper.spotify.requests.data.users_profile.GetCurrentUsersProfileReq
 import org.apache.hc.core5.http.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static com.jb.spotifybackend.spotifycontroller.UserAuthController.spotifyApi;
 
@@ -29,13 +32,14 @@ public class SpotifyPlaylistController {
     public ResponseEntity<?> createPlaylist(@RequestBody PlaylistRequest playlistRequest) {
        System.out.println("accessToken : " + playlistRequest.getAccessToken());
        spotifyApi.setAccessToken(playlistRequest.accessToken);
+       Boolean isPublic = !playlistRequest.isPrivate();
 
        String userId = getUserProfileId();
 
         try {
             CreatePlaylistRequest createPlaylistRequest = spotifyApi.createPlaylist(userId, playlistRequest.getPlaylistName())
                     .collaborative(false)
-                    .public_(playlistRequest.isPrivate())
+                    .public_(false)
                     .description("Playlist created with Setlist Finder ")
                     .build();
             Playlist playlist = createPlaylistRequest.execute();
@@ -69,6 +73,13 @@ public class SpotifyPlaylistController {
        }
        return userId;
    }
+
+
+    public static String encodeImageToBase64(String imagePath) throws IOException {
+        byte[] imageBytes = Files.readAllBytes(Path.of(imagePath));
+        byte[] encodedBytes = Base64Utils.encode(imageBytes);
+        return new String(encodedBytes);
+    }
 
 
 }

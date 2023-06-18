@@ -62,16 +62,36 @@ public class SpotifyApiController {
         return new Artist[0];
     }
 
+    public static Artist[] searchArtist(String artistName) {
+        clientCredentials_Sync();
+        final SearchArtistsRequest searchArtistsRequest = spotifyApiLight.searchArtists(artistName)
+                .limit(1)
+                .build();
+
+        try {
+
+            final Paging<Artist> artistPaging = searchArtistsRequest.execute();
+
+            System.out.println("Total: " + artistPaging.getTotal());
+            System.out.println(artistName);
+            return artistPaging.getItems();
+
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return new Artist[0];
+    }
+
     @GetMapping(value = "searchTrack/{q}")
     public static Track[] getSongSearch(@PathVariable("q") String q) {
-        // track%3AThis%20is%20Why%20artist%3AParamore
-
+        //q= "track%3AThis%20is%20Why%20artist%3AParamore";
         clientCredentials_Sync();
         final SearchTracksRequest searchTracksRequest = spotifyApiLight.searchTracks(q)
                 .limit(1)
                 .build();
 
         try {
+            System.out.println("search: " + q);
             System.out.println("searchTracksRequest: " + searchTracksRequest);
             final Paging<Track> trackPaging = searchTracksRequest.execute();
 
@@ -79,9 +99,10 @@ public class SpotifyApiController {
             System.out.println("Total: " + trackPaging.getTotal());
             return trackPaging.getItems();
         } catch (IOException | SpotifyWebApiException | ParseException e) {
+            System.out.println("Searchterm: " + q);
             System.out.println("Error: " + e.getMessage());
+            return new Track[0];
         }
-        System.out.println(new Track[0]);
-        return new Track[0];
+
     }
 }

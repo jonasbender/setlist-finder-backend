@@ -7,9 +7,11 @@ import com.jb.spotifybackend.model.Song;
 import com.jb.spotifybackend.model.SpotifySong;
 import com.jb.spotifybackend.setlistfmcontroller.SetlistApiController;
 import com.jb.spotifybackend.spotifycontroller.SpotifyApiController;
+import com.wrapper.spotify.model_objects.specification.Artist;
 import com.wrapper.spotify.model_objects.specification.Track;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,9 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.jb.spotifybackend.controller.PlaylistImageController.getPlaylistImage;
+import static com.jb.spotifybackend.spotifycontroller.SpotifyApiController.searchArtist;
 
 
 @RestController
@@ -30,7 +35,7 @@ public class SetlistController {
     @RequestMapping(value = "tracks/{setlistId}", method = RequestMethod.GET)
     public String getSetlistTracks(@PathVariable("setlistId") String setlistId) throws Exception {
 
-        getPlaylistImage();
+
 
         List<SpotifySong> spotifySongs = new ArrayList<>();
 
@@ -42,6 +47,8 @@ public class SetlistController {
         String venue = jsonObject.getJSONObject("venue").getString("name");
         String eventDate = jsonObject.getString("eventDate");
 
+
+
         // String jsonTestString = PlaylistImageController.getPlaylistImage();
         //System.out.println(jsonTestString);
         System.out.println("Test");
@@ -50,17 +57,31 @@ public class SetlistController {
 
         Integer totalDurationMs = 0;
 
+        Artist[] artistObject = searchArtist(artistName);
+        String artistImageUrl = artistObject[0].getImages()[0].getUrl();
 
+        ResponseEntity<byte[]>  playlistImage = getPlaylistImage(artistImageUrl, artistName, venue, eventDate);
+        String base64Image = Base64.getEncoder().encodeToString(playlistImage.getBody());
+
+
+        System.out.println("songs: " + songs);
         for (Song song : songs) {
             //System.out.println("test");
             //System.out.println(song);
             //System.out.println(song.getTrackName());
             String trackName = song.getTrackName();
             String artist = song.getArtist();
+            System.out.println("Anzahl an songs: " + songs.size());
 
-            String q = "track: " + trackName + " artist: " + artist;
+            String cleanedTrackName = trackName.replace(" ", "%20");
+            String cleanedArtistName = artistName.replace(" ", "%20");
+
+            String q = "track: " + trackName + " artist: " + artistName;
+            //String q = "track%3A" + cleanedTrackName + "%20artist%3A" + cleanedArtistName;
             Track[] spotifyResponse = SpotifyApiController.getSongSearch(q);
+            System.out.println("Spotify Response " + spotifyResponse.toString());
             String trackId = spotifyResponse[0].getId();
+            System.out.println("Track Id: "+trackId);
             String trackImageURL = spotifyResponse[0].getAlbum().getImages()[0].getUrl();
             String album = spotifyResponse[0].getAlbum().getName();
             Boolean isCover = song.getCover();
@@ -75,6 +96,7 @@ public class SetlistController {
             SpotifySong spotifySong = new SpotifySong(trackName, trackId, trackImageURL, artist, album, isCover);
             System.out.println(spotifySong);
             spotifySongs.add(spotifySong);
+            //TimeUnit.SECONDS.sleep(1);
         }
 
         System.out.println("Total Duration: " + totalDurationMs);
@@ -106,12 +128,14 @@ public class SetlistController {
         jsonSongObject.put("eventVenue", venue);
         jsonSongObject.put("artistName", artistName);
         jsonSongObject.put("tracks", jsonSongArray);
+        jsonSongObject.put("artistImageUrl", artistImageUrl);
+        jsonSongObject.put("playlistImage", base64Image);
 
         String jsonSetlistString = jsonSongObject.toString(4);
 
 
-        System.out.println(jsonSetlistString);
-        System.out.println(jsonSetlist);
+        //System.out.println(jsonSetlistString);
+        //System.out.println(jsonSetlist);
         return jsonSetlistString;
 
     };
