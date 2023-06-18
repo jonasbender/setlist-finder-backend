@@ -70,9 +70,9 @@ public class PlaylistImageController {
 
             graphics.dispose();
 
-            String outputFilePath = "/Users/jonas/Downloads/modified_image.png";
+            //String outputFilePath = "/Users/jonas/Downloads/modified_image.png";
 
-            ImageIO.write(image, "png", new File(outputFilePath));
+            //ImageIO.write(image, "png", new File(outputFilePath));
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(image, "png", baos);
