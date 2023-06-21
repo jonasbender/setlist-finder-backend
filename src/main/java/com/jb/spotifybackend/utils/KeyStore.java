@@ -8,7 +8,9 @@ public class KeyStore {
 
 
     // Spotify Keys and Redirect URL
-    public static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8080/api/callback/");
+    public static final URI redirectUri = SpotifyHttpManager.makeUri("https://setlistfinderbackend-9a6bfa1f1e4a.herokuapp.com/api/callback/");
+
+    //public static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8080/api/callback/");
     public static final String CLIENT_ID = "013cc9a435c7467492532478e1144d3c";
     public static final String CLIENT_SECRET = "746bc9dc80924d48804b351fcba66356";
 
